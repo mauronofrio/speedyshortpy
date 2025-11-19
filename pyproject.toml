@@ -1,0 +1,21 @@
+[project]
+name = "speedyshortpy"
+version = "0.1.1"
+description = "Python client for the SpeedyShort URL shortener."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Prosperity Public License 3.0.0"}
+authors = [
+    {name = "Mauronofrio Matarrese"}
+]
+
+dependencies = ["requests>=2.28"]
+
+[project.urls]
+Homepage = "https://github.com/mauronofrio/speedyshortpy"
+Repository = "https://github.com/mauronofrio/speedyshortpy"
+Issues = "https://github.com/mauronofrio/speedyshortpy/issues"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
