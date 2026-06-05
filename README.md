@@ -48,9 +48,34 @@ the redirect response:
 
 ```python
 resp = client.resolve("a7X9pQ", follow_redirects=False)
-print(resp.status_code)
+print(resp.status_code)          # 301 if active, 451 if blocked
 print(resp.headers.get("Location"))
 ```
+
+A blocked link returns HTTP **451** instead of a redirect.
+
+### Reporting a link
+
+You can report a short link for abuse. The `url` parameter accepts a short
+code, a full short URL, or a full external URL — the server resolves the
+domain automatically.
+
+```python
+# Using just the short code
+client.report("a7X9pQ", reason="This link points to a phishing page")
+
+# Using the full short URL
+client.report("https://syrt.cc/a7X9pQ", reason="This link points to a phishing page")
+
+# Using a full external URL
+client.report("https://malicious.com/page", reason="Malware distribution site")
+```
+
+The `reason` must be between **10 and 100 characters**. A `ValueError` is raised
+client-side if the constraint is not met. The report is queued for manual review
+and does not immediately block the link.
+
+Rate limit: **3 reports per IP per day**.
 
 ## License
 

@@ -68,9 +68,9 @@ class SpeedyShortClient:
         """
         Perform a GET request for the given short code.
 
-        This is mostly useful if you want to inspect the redirect response.
-        If follow_redirects is False, the Response will usually have status_code 301/302
+        If follow_redirects is False, the response will usually have status 301/302
         and the target URL in the 'Location' header.
+        If the link has been blocked, the response will have status 451.
 
         :param code: Short code (e.g. 'a7X9pQ').
         :param follow_redirects: Whether to follow redirects automatically.
@@ -79,3 +79,31 @@ class SpeedyShortClient:
         url = f"{self.base_url}/{code.lstrip('/')}"
         resp = self._session.get(url, timeout=self.timeout, allow_redirects=follow_redirects)
         return resp
+
+    def report(self, url: str, reason: str) -> None:
+        """
+        Submit an abuse report for a short link.
+
+        The url parameter accepts any of the following formats:
+          - short code only:       'a7X9pQ'
+          - full short URL:        'https://syrt.cc/a7X9pQ'
+          - full external URL:     'https://malicious.com/page'
+
+        The server resolves the domain to act on regardless of the format.
+
+        :param url: The short link or URL to report.
+        :param reason: A description of why the link is being reported (10–100 characters).
+        :raises ValueError: if reason length is not between 10 and 100 characters.
+        :raises requests.HTTPError: if the API returns an error.
+        """
+        reason = reason.strip()
+        if not 10 <= len(reason) <= 100:
+            raise ValueError(f"reason must be between 10 and 100 characters (got {len(reason)})")
+
+        endpoint = f"{self.base_url}/api/report"
+        resp = self._session.post(
+            endpoint,
+            json={"code": url, "reason": reason},
+            timeout=self.timeout,
+        )
+        resp.raise_for_status()
